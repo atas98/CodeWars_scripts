@@ -11,15 +11,16 @@ class TestSimplePrograms(unittest.TestCase):
         mov a 200
         dec a
         inc b
-        jnz a -2
+        jne a -2
         dec c
         mov a b
-        jnz c -5
-        jnz 0 1
+        jne c -5
+        jne 0 1
         mov c a
         '''
 
-        self.assertEqual(assembler_interpreter(program), '(5+1)/2 = 3')
+        self.assertEqual(assembler_interpreter(
+            program.splitlines()), -1)
 
     def testFunc(self):
         program = '''
@@ -35,7 +36,8 @@ class TestSimplePrograms(unittest.TestCase):
             ret
         '''
 
-        self.assertEqual(assembler_interpreter(program), '(5+1)/2 = 3')
+        self.assertEqual(assembler_interpreter(
+            program.splitlines()), '(5+1)/2 = 3')
 
     def testFactorial(self):
         program_factorial = '''
@@ -58,7 +60,8 @@ class TestSimplePrograms(unittest.TestCase):
             ret
         '''
 
-        self.assertEqual(assembler_interpreter(program_factorial), '5! = 120')
+        self.assertEqual(assembler_interpreter(
+            program_factorial.splitlines()), '5! = 120')
 
     def testFibobacci(self):
         program_fibonacci = '''
@@ -94,7 +97,7 @@ class TestSimplePrograms(unittest.TestCase):
         '''
 
         self.assertEqual(assembler_interpreter(
-            program_fibonacci), 'Term 8 of Fibonacci series is: 21')
+            program_fibonacci.splitlines()), 'Term 8 of Fibonacci series is: 21')
 
     def testMod(self):
         program_mod = '''
@@ -114,7 +117,8 @@ class TestSimplePrograms(unittest.TestCase):
             ret
         '''
 
-        self.assertEqual(assembler_interpreter(program_mod), 'mod(11, 3) = 2')
+        self.assertEqual(assembler_interpreter(
+            program_mod.splitlines()), 'mod(11, 3) = 2')
 
     def testGcd(self):
         program_gcd = '''
@@ -166,7 +170,7 @@ class TestSimplePrograms(unittest.TestCase):
         '''
 
         self.assertEqual(assembler_interpreter(
-            program_gcd), 'gcd(81, 153) = 9')
+            program_gcd.splitlines()), 'gcd(81, 153) = 9')
 
     def testFail(self):
         program_fail = '''
@@ -185,7 +189,7 @@ class TestSimplePrograms(unittest.TestCase):
             msg 'This program should return -1'
         '''
 
-        self.assertEqual(assembler_interpreter(program_fail), -1)
+        self.assertEqual(assembler_interpreter(program_fail.splitlines()), -1)
 
     def testPower(self):
         program_power = '''
@@ -212,7 +216,9 @@ class TestSimplePrograms(unittest.TestCase):
             ret
         '''
 
-        self.assertEqual(assembler_interpreter(program_power), '2^10 = 1024')
+        self.assertEqual(assembler_interpreter(
+            program_power.splitlines()), '2^10 = 1024')
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -4,6 +4,7 @@
 import sys
 from collections import deque
 
+
 def assembler_interpreter(program):
     # * Init
     pc = 0
@@ -11,26 +12,32 @@ def assembler_interpreter(program):
     registers = {}
     labels = {}
     cmpres = 0
-    output = -1 
+    output = -1
 
     # * Preprocessing - delete comment stuff; process labels
-    # indexing labels
-    for idx, line in enumerate(program):
-        if ':' in line:
-            labels[line.strip()[:-1]]=idx
-            del program[idx]
 
     # del comments
     for idx, line in enumerate(program):
         if ';' in line:
             program[idx] = line[:line.index(';')]
 
+    # fuck commas
+    for idx, line in enumerate(program):
+        if ',' in line:
+            program[idx] = ''.join(filter(lambda c: c != ',', line))
+
     # deleting extra spaces
     program = [line.strip() for line in program]
-    
+
     # del empty lines
-    isnotempty = lambda line:line
+    def isnotempty(line): return line
     program = list(filter(isnotempty, program))
+
+    # indexing labels
+    for idx, line in enumerate(program):
+        if ':' in line:
+            labels[line.strip()[:-1]] = idx
+            del program[idx]
 
     # * Runtime
     # TODO: Fuck commas
@@ -38,74 +45,89 @@ def assembler_interpreter(program):
         splited_line = program[pc].split()
         cmd, args = splited_line[0], splited_line[1:]
 
-        pc=pc+1
-        
-        if cmd=='mov':
+        if cmd == 'mov':
             if args[1] in registers:
                 registers[args[0]] = registers[args[1]]
             else:
                 registers[args[0]] = int(args[1])
-        elif cmd=='inc':
+        elif cmd == 'inc':
             registers[args[0]] = registers[args[0]]+1
-        elif cmd=='dec':
+        elif cmd == 'dec':
             registers[args[0]] = registers[args[0]]-1
-        elif cmd=='add':
+        elif cmd == 'add':
             if args[1] in registers:
                 registers[args[0]] = registers[args[0]]+registers[args[1]]
             else:
                 registers[args[0]] = registers[args[0]]+int(args[1])
-        elif cmd=='sub':
+        elif cmd == 'sub':
             if args[1] in registers:
                 registers[args[0]] = registers[args[0]]-registers[args[1]]
             else:
                 registers[args[0]] = registers[args[0]]-int(args[1])
-        elif cmd=='dev':
+        elif cmd == 'div':
             if args[1] in registers:
-                registers[args[0]] = registers[args[0]]/registers[args[1]]
+                registers[args[0]] = registers[args[0]]//registers[args[1]]
             else:
-                registers[args[0]] = registers[args[0]]/int(args[1])
-        elif cmd=='mul':
+                registers[args[0]] = registers[args[0]]//int(args[1])
+        elif cmd == 'mul':
             if args[1] in registers:
                 registers[args[0]] = registers[args[0]]*registers[args[1]]
             else:
                 registers[args[0]] = registers[args[0]]*int(args[1])
-        elif cmd=='jmp':
+        elif cmd == 'jmp':
             pc = labels[args[0]]
-        elif cmd=='cmp':
+            continue
+        elif cmd == 'cmp':
             if args[1] in registers:
                 cmpres = registers[args[0]]-registers[args[1]]
             else:
                 cmpres = registers[args[0]]-int(args[1])
-        elif cmd=='jne':
+        elif cmd == 'jne':
             if cmpres != 0:
                 pc = labels[args[0]]
-        elif cmd=='je':
+                continue
+        elif cmd == 'je':
             if cmpres == 0:
                 pc = labels[args[0]]
-        elif cmd=='jge':
+                continue
+        elif cmd == 'jge':
             if cmpres >= 0:
                 pc = labels[args[0]]
-        elif cmd=='jg':
+                continue
+        elif cmd == 'jg':
             if cmpres > 0:
                 pc = labels[args[0]]
-        elif cmd=='jle':
+                continue
+        elif cmd == 'jle':
             if cmpres <= 0:
                 pc = labels[args[0]]
-        elif cmd=='jl':
+                continue
+        elif cmd == 'jl':
             if cmpres < 0:
                 pc = labels[args[0]]
-        elif cmd=='call':
+                continue
+        elif cmd == 'call':
             callstack.append(pc)
             pc = labels[args[0]]
-        elif cmd=='ret':
+            continue
+        elif cmd == 'ret':
             pc = callstack.pop()
-        elif cmd=='msg':
-            pass
-        elif cmd=='end':
-            if output == -1: output = 0
+        elif cmd == 'msg':
+            #! FUCK COMMAS!
+            output = ""
+            for arg in "".join(args).split("'"):
+                if arg in registers:
+                    output = output+str(registers[arg])
+                else:
+                    output = output+arg
+        elif cmd == 'end':
+            if output == -1:
+                output = 0
             break
+        pc = pc+1
 
     return output
+
 
 if __name__ == "__main__":
     # if len(sys.argv) != 2:
@@ -119,7 +141,7 @@ if __name__ == "__main__":
 
     # prog = f.read().splitlines()
     # output = assembler_interpreter(prog)
-    code = ''' 
+    code = '''
         ; My first program
         mov  a, 5
         inc  a
