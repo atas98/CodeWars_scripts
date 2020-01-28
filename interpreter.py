@@ -12,7 +12,7 @@ def assembler_interpreter(program):
     registers = {}
     labels = {}
     cmpres = 0
-    output = -1
+    output = ''
 
     # * Preprocessing - delete comment stuff; process labels
 
@@ -23,7 +23,7 @@ def assembler_interpreter(program):
 
     # fuck commas
     for idx, line in enumerate(program):
-        if ',' in line:
+        if ',' in line and not 'msg' in line:
             program[idx] = ''.join(filter(lambda c: c != ',', line))
 
     # deleting extra spaces
@@ -40,7 +40,6 @@ def assembler_interpreter(program):
             del program[idx]
 
     # * Runtime
-    # TODO: Fuck commas
     while pc < len(program):
         splited_line = program[pc].split()
         cmd, args = splited_line[0], splited_line[1:]
@@ -113,44 +112,35 @@ def assembler_interpreter(program):
         elif cmd == 'ret':
             pc = callstack.pop()
         elif cmd == 'msg':
-            #! FUCK COMMAS!
-            output = ""
-            for arg in "".join(args).split("'"):
-                if arg in registers:
-                    output = output+str(registers[arg])
-                else:
-                    output = output+arg
+            msg = program[pc][3:]
+            strliteral = False
+            for char in msg:
+                if not strliteral and char=="'":
+                    strliteral = True
+                elif strliteral and char=="'":
+                    strliteral = False
+                elif strliteral:
+                    output = output+char
+                elif not strliteral and char.isalpha():
+                    output = output+str(registers[char])
         elif cmd == 'end':
-            if output == -1:
-                output = 0
-            break
+            return output
         pc = pc+1
 
-    return output
+    return -1
 
 
 if __name__ == "__main__":
-    # if len(sys.argv) != 2:
-    #     print("Usage: interpreter.py [program path]")
-    #     exit(-1)
-    # try:
-    #     f = open(sys.argv[1], 'r')
-    # except:
-    #     print("Wrong arg!")
-    #     exit(-1)
+    if len(sys.argv) != 2:
+        print("Usage: interpreter.py [program path]")
+        exit(-1)
+    try:
+        f = open(sys.argv[1], 'r')
+    except:
+        print("Wrong arg!")
+        exit(-1)
 
-    # prog = f.read().splitlines()
-    # output = assembler_interpreter(prog)
-    code = '''
-        ; My first program
-        mov  a, 5
-        inc  a
-        call function
-        msg  '(5+1)/2 = ', a    ; output message
-        end
-
-        function:
-            div  a, 2
-            ret
-        '''
-    print(assembler_interpreter(code.splitlines()))
+    prog = f.read().splitlines()
+    output = assembler_interpreter(prog)
+    
+    print(output)
