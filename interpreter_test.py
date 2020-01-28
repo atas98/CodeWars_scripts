@@ -218,6 +218,50 @@ class TestSimplePrograms(unittest.TestCase):
 
         self.assertEqual(assembler_interpreter(
             program_power.splitlines()), '2^10 = 1024')
+    
+    def testRndres1(self):
+        program_power = '''
+        mov h, 12   ; instruction mov h, 12
+        mov e, 10   ; instruction mov e, 10
+        call func
+        msg 'Random result: ', c
+        end
+
+        func:
+            cmp h, e
+            jl exit
+            mov c, h
+            mul c, e
+            ret
+        ; Do nothing
+        exit:
+            msg 'Do nothing'
+        '''
+
+        self.assertEqual(assembler_interpreter(
+            program_power.splitlines()), 'Random result: 120')
+      
+    def testRndres2(self):
+        program_power = '''
+        mov a, 14   ; instruction mov a, 14
+        mov t, 12   ; instruction mov t, 12
+        call func
+        msg 'Random result: ', d
+        end
+
+        func:
+            cmp a, t
+            je exit
+            mov d, a
+            div d, t
+            ret
+        ; Do nothing
+        exit:
+            msg 'Do nothing'
+        '''
+
+        self.assertEqual(assembler_interpreter(
+            program_power.splitlines()), 'Random result: 1')
 
 
 if __name__ == "__main__":
