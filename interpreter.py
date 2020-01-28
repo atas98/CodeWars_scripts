@@ -35,7 +35,7 @@ def assembler_interpreter(program):
 
     # indexing labels
     for idx, line in enumerate(program):
-        if ':' in line:
+        if line[-1]==':':
             labels[line.strip()[:-1]] = idx
             del program[idx]
 
@@ -142,5 +142,3 @@ if __name__ == "__main__":
 
     prog = f.read().splitlines()
     output = assembler_interpreter(prog)
-    
-    print(output)
