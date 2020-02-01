@@ -9,7 +9,7 @@ def next_gen(cells):
             neighbors = 0
             for dx in range(-1, 2):
                 for dy in range(-1, 2):
-                    if (dx!=0 or dy!=0) and (x+dx >= 0 and x+dx < len(cells)) and (y+dy >= 0 and y+dy < len(cells[0])):
+                    if (dx != 0 or dy != 0) and (x+dx >= 0 and x+dx < len(cells)) and (y+dy >= 0 and y+dy < len(cells[0])):
                         neighbors = neighbors+cells[x+dx][y+dy]
             if cell and neighbors < 2 or neighbors > 3:
                 next_gen[x][y] = 0
@@ -30,16 +30,14 @@ def htmlize(array):
 
 
 if __name__ == "__main__":
-    start = [[1,0,0],
-             [0,1,1],
-             [1,1,0]]
-    end   = [[0,1,0],
-             [0,0,1],
-             [1,1,1]]
+    start = [[1, 0, 0],
+             [0, 1, 1],
+             [1, 1, 0]]
+    end = [[0, 1, 0],
+           [0, 0, 1],
+           [1, 1, 1]]
     result = next_gen(start)
     assert end == result, str(result)+'\n'+str(end)
     print(htmlize(start))
     print(htmlize(result))
     print(htmlize(end))
-    
-    

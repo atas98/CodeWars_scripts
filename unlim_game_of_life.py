@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # https://www.codewars.com/kata/52423db9add6f6fc39000354
 from copy import deepcopy
-
+from time import sleep
 
 def next_gen(cells):
     next_gen = [[0 for cell in row] for row in cells]
@@ -53,13 +53,10 @@ def htmlize(array):
 
 
 if __name__ == "__main__":
-    start = [[0,0,0,0],
-             [0,0,1,0],
-             [0,1,0,0],
-             [0,1,0,0],
-             [0,1,0,0],
-             [0,1,0,0],
-             [0,0,1,0],
-             [0,0,0,0]]
-    for gen in range(5):
+    start = [[0,1,0],
+             [1,1,1],
+             [1,0,1],
+             [0,1,0]]
+    for gen in range(100500):
         print(htmlize(get_generation(start, gen)))
+        sleep(1)
